@@ -36,7 +36,7 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 HWND hWnd; // main window
 HWND hwndButton0, hwndButton1, hwndButton2, hwndButton3, hwndButton4, hwndButton5, hwndButton6, hwndButton7, hwndButton8, hwndButton9; // Number buttons
 HWND displayPanel; // Display panel
-HWND hwndButtonDecimal, hwndButtonEquals, hwndButtonPercent, hwndButtonMult, hwndButtonDiv, hwndButtonAdd, hwndButtonSub, hwndButtonC, hwndButtonCE; // Operation buttons
+HWND hwndButtonDecimal, hwndButtonEquals, hwndButtonPercent, hwndButtonMult, hwndButtonDiv, hwndButtonAdd, hwndButtonSub, hwndButtonC, hwndButtonCE; // Operator buttons
 
 Calculate calculateObj; // Object for the logic of the calulator
 std::wstring displayWStr;
@@ -47,8 +47,6 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
-
-void UpdateDisplay(std::wstring& displayWStr, LPCWSTR& displayLPCWSTR, HWND& displayPanel);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -424,8 +422,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_COMMAND:
         {
-            //UpdateDisplay(displayWStr, displayLPCWSTR, displayPanel);
-
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
             switch (wmId)
@@ -445,8 +441,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -462,8 +458,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -479,8 +475,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -496,8 +492,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -513,8 +509,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -530,8 +526,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -547,8 +543,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -564,8 +560,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -581,8 +577,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
@@ -598,8 +594,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     displayLPCWSTR,      // Button text 
                     WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
                     10,         // x position 
-                    20,         // y position 
-                    200,        // Button width
+                    80,         // y position 
+                    320,        // Button width
+                    50,        // Button height
+                    hWnd,     // Parent window
+                    (HMENU)DISPLAY_PANEL,       // Button menu.
+                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+                    NULL);      // Pointer not needed.
+                break;
+            case BUTTON_ADD_ID:
+                calculateObj.OperatorPress(1);
+                break;
+            case BUTTON_SUB_ID:
+                calculateObj.OperatorPress(2);
+                break;
+            case BUTTON_MULT_ID:
+                calculateObj.OperatorPress(3);
+                break;
+            case BUTTON_DIV_ID:
+                calculateObj.OperatorPress(4);
+                break;
+            case BUTTON_EQUALS_ID:
+                calculateObj.EqualsPress();
+                displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                displayLPCWSTR = displayWStr.c_str();
+                displayPanel = CreateWindowW(
+                    L"STATIC",  // Predefined class; Unicode assumed 
+                    displayLPCWSTR,      // Button text 
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
+                    10,         // x position 
+                    80,         // y position 
+                    320,        // Button width
                     50,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
