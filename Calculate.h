@@ -5,8 +5,8 @@
 class Calculate
 {
 private:
-	int firstNum;
-	int secondNum;
+	double firstNum;
+	double secondNum;
 
 	// For state:
 	// 0 means it is on the first num
@@ -14,7 +14,7 @@ private:
 	// 2 means it is on the result
 	int state;
 
-	int display;
+	double display;
 
 	// For operatorState:
 	// 0 means none
@@ -24,13 +24,21 @@ private:
 	// 4 menas divide
 	int operatorState;
 
+	bool decimalMode;
+	double decimalMult;
+
 public:
 	Calculate();
-	int GetDisplay();
+	double GetDisplay();
 	void NumberPress(int digit);
 	void CreateFirstNum(int digit);
 	void CreateSecondNum(int digit);
 	void OperatorPress(int operatorCode);
 	void EqualsPress();
+	void DecimalPress();
+	void CreateFirstNumDecimal(int digit);
+	void CreateSecondNumDecimal(int digit);
+	void Clear();
+	void ClearEntry();
 };
 

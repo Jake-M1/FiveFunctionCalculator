@@ -1,2 +1,4 @@
-﻿  Calculate.cpp
+﻿  FiveFunctionCalculator.cpp
+C:\Users\jsm12\Documents\(Jake)\Coding\C++\FiveFunctionCalculator\FiveFunctionCalculator.cpp(684,59): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\jsm12\Documents\(Jake)\Coding\C++\FiveFunctionCalculator\FiveFunctionCalculator.cpp(689,57): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
   FiveFunctionCalculator.vcxproj -> C:\Users\jsm12\Documents\(Jake)\Coding\C++\FiveFunctionCalculator\x64\Debug\FiveFunctionCalculator.exe

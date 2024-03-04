@@ -631,6 +631,43 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
                     NULL);      // Pointer not needed.
                 break;
+            case BUTTON_DECIMAL_ID:
+                calculateObj.DecimalPress();
+                break;
+            case BUTTON_C_ID:
+                calculateObj.Clear();
+                displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                displayLPCWSTR = displayWStr.c_str();
+                displayPanel = CreateWindowW(
+                    L"STATIC",  // Predefined class; Unicode assumed 
+                    displayLPCWSTR,      // Button text 
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
+                    10,         // x position 
+                    80,         // y position 
+                    320,        // Button width
+                    50,        // Button height
+                    hWnd,     // Parent window
+                    (HMENU)DISPLAY_PANEL,       // Button menu.
+                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+                    NULL);      // Pointer not needed.
+                break;
+            case BUTTON_CE_ID:
+                calculateObj.ClearEntry();
+                displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                displayLPCWSTR = displayWStr.c_str();
+                displayPanel = CreateWindowW(
+                    L"STATIC",  // Predefined class; Unicode assumed 
+                    displayLPCWSTR,      // Button text 
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
+                    10,         // x position 
+                    80,         // y position 
+                    320,        // Button width
+                    50,        // Button height
+                    hWnd,     // Parent window
+                    (HMENU)DISPLAY_PANEL,       // Button menu.
+                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+                    NULL);      // Pointer not needed.
+                break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
             }

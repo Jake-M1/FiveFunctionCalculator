@@ -7,9 +7,11 @@ Calculate::Calculate()
 	state = 0;
 	display = 0;
 	operatorState = 0;
+	decimalMode = false;
+	decimalMult = 0.1;
 }
 
-int Calculate::GetDisplay()
+double Calculate::GetDisplay()
 {
 	return display;
 }
@@ -18,18 +20,39 @@ void Calculate::NumberPress(int digit)
 {
 	if (state == 0)
 	{
-		CreateFirstNum(digit);
+		if (decimalMode)
+		{
+			CreateFirstNumDecimal(digit);
+		}
+		else
+		{
+			CreateFirstNum(digit);
+		}
 		display = firstNum;
 	}
 	else if (state == 1)
 	{
-		CreateSecondNum(digit);
+		if (decimalMode)
+		{
+			CreateSecondNumDecimal(digit);
+		}
+		else
+		{
+			CreateSecondNum(digit);
+		}
 		display = secondNum;
 	}
 	else if (state == 2)
 	{
 		firstNum = 0;
-		CreateFirstNum(digit);
+		if (decimalMode)
+		{
+			CreateFirstNumDecimal(digit);
+		}
+		else
+		{
+			CreateFirstNum(digit);
+		}
 		display = firstNum;
 		state = 0;
 	}
@@ -49,6 +72,8 @@ void Calculate::OperatorPress(int operatorCode)
 {
 	state = 1;
 	operatorState = operatorCode;
+	decimalMode = false;
+	decimalMult = 0.1;
 }
 
 void Calculate::EqualsPress()
@@ -82,4 +107,48 @@ void Calculate::EqualsPress()
 
 	secondNum = 0;
 	state = 2;
+}
+
+void Calculate::DecimalPress()
+{
+	decimalMode = true;
+}
+
+void Calculate::CreateFirstNumDecimal(int digit)
+{
+	firstNum = firstNum + (digit * decimalMult);
+	decimalMult = decimalMult * 0.1;
+}
+
+void Calculate::CreateSecondNumDecimal(int digit)
+{
+	secondNum = secondNum + (digit * decimalMult);
+	decimalMult = decimalMult * 0.1;
+}
+
+void Calculate::Clear()
+{
+	firstNum = 0;
+	secondNum = 0;
+	state = 0;
+	display = 0;
+	operatorState = 0;
+	decimalMode = false;
+	decimalMult = 0.1;
+}
+
+void Calculate::ClearEntry()
+{
+	if (state == 0 || state == 2)
+	{
+		firstNum = 0;
+	}
+	else if (state == 1)
+	{
+		secondNum = 0;
+	}
+
+	display = 0;
+	decimalMode = false;
+	decimalMult = 0.1;
 }
