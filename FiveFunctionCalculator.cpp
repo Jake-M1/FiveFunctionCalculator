@@ -27,6 +27,10 @@
 #define BUTTON_SUB_ID 1017
 #define BUTTON_C_ID 1018
 #define BUTTON_CE_ID 1019
+#define BUTTON_CALCULATOR_ID 1020
+#define BUTTON_TRACE_ID 1021
+#define BUTTON_TRACE_ON_ID 1022
+#define BUTTON_TRACE_OFF_ID 1023
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
@@ -37,10 +41,16 @@ HWND hWnd; // main window
 HWND hwndButton0, hwndButton1, hwndButton2, hwndButton3, hwndButton4, hwndButton5, hwndButton6, hwndButton7, hwndButton8, hwndButton9; // Number buttons
 HWND displayPanel; // Display panel
 HWND hwndButtonDecimal, hwndButtonEquals, hwndButtonPercent, hwndButtonMult, hwndButtonDiv, hwndButtonAdd, hwndButtonSub, hwndButtonC, hwndButtonCE; // Operator buttons
+HWND hwndCalculator, hwndTrace, hwndTraceOn, hwndTraceOff; // Trace buttons
+HWND tracePanel; // Trace panel
 
 Calculate calculateObj; // Object for the logic of the calulator
 std::wstring displayWStr;
-LPCWSTR displayLPCWSTR;
+LPCWSTR displayLPCWSTR; // Display text
+LPCWSTR traceLPCWSTR; // Trace text
+std::list<std::wstring> currentTraceLog;
+std::list<std::wstring>::iterator it;
+std::wstring temp;
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -419,6 +429,60 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
             NULL);      // Pointer not needed.
 
+        hwndCalculator = CreateWindowW(
+            L"BUTTON",  // Predefined class; Unicode assumed 
+            L"Calculator",      // Button text 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+            5,         // x position 
+            5,         // y position 
+            80,        // Button width
+            25,        // Button height
+            hWnd,     // Parent window
+            (HMENU)BUTTON_CALCULATOR_ID,       // Button menu.
+            (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+            NULL);      // Pointer not needed.
+
+        hwndTrace = CreateWindowW(
+            L"BUTTON",  // Predefined class; Unicode assumed 
+            L"Trace Logic",      // Button text 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+            85,         // x position 
+            5,         // y position 
+            80,        // Button width
+            25,        // Button height
+            hWnd,     // Parent window
+            (HMENU)BUTTON_TRACE_ID,       // Button menu.
+            (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+            NULL);      // Pointer not needed.
+
+        hwndTraceOn = CreateWindowW(
+            L"BUTTON",  // Predefined class; Unicode assumed 
+            L"Intro Trace On",      // Button text 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+            120,         // x position 
+            40,         // y position 
+            100,        // Button width
+            25,        // Button height
+            hWnd,     // Parent window
+            (HMENU)BUTTON_TRACE_ON_ID,       // Button menu.
+            (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+            NULL);      // Pointer not needed.
+        // Default to trace on
+        EnableWindow(hwndTraceOn, 0);
+
+        hwndTraceOff = CreateWindowW(
+            L"BUTTON",  // Predefined class; Unicode assumed 
+            L"Intro Trace Off",      // Button text 
+            WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles 
+            230,         // x position 
+            40,         // y position 
+            100,        // Button width
+            25,        // Button height
+            hWnd,     // Parent window
+            (HMENU)BUTTON_TRACE_OFF_ID,       // Button menu.
+            (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+            NULL);      // Pointer not needed.
+
         break;
     case WM_COMMAND:
         {
@@ -436,177 +500,80 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 calculateObj.NumberPress(1);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON2_ID:
                 calculateObj.NumberPress(2);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON3_ID:
                 calculateObj.NumberPress(3);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON4_ID:
                 calculateObj.NumberPress(4);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON5_ID:
                 calculateObj.NumberPress(5);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON6_ID:
                 calculateObj.NumberPress(6);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON7_ID:
                 calculateObj.NumberPress(7);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON8_ID:
                 calculateObj.NumberPress(8);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON9_ID:
                 calculateObj.NumberPress(9);
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON0_ID:
                 calculateObj.NumberPress(0);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                if (calculateObj.GetNegate())
+                {
+                    displayWStr = L"-" + std::to_wstring(calculateObj.GetDisplay());
+                }
+                else
+                {
+                    displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                }
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON_ADD_ID:
                 calculateObj.OperatorPress(1);
                 break;
             case BUTTON_SUB_ID:
                 calculateObj.OperatorPress(2);
+                if (calculateObj.GetNegate() && calculateObj.GetState() == 0)
+                {
+                    displayWStr = L"-" + std::to_wstring(calculateObj.GetDisplay());
+                    displayLPCWSTR = displayWStr.c_str();
+                    SetWindowText(displayPanel, displayLPCWSTR);
+                }
                 break;
             case BUTTON_MULT_ID:
                 calculateObj.OperatorPress(3);
@@ -618,18 +585,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 calculateObj.EqualsPress();
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON_DECIMAL_ID:
                 calculateObj.DecimalPress();
@@ -638,35 +594,98 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 calculateObj.Clear();
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
-                    10,         // x position 
-                    80,         // y position 
-                    320,        // Button width
-                    50,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
+                SetWindowText(displayPanel, displayLPCWSTR);
                 break;
             case BUTTON_CE_ID:
                 calculateObj.ClearEntry();
                 displayWStr = std::to_wstring(calculateObj.GetDisplay());
                 displayLPCWSTR = displayWStr.c_str();
-                displayPanel = CreateWindowW(
+                SetWindowText(displayPanel, displayLPCWSTR);
+                break;
+            case BUTTON_PERCENT_ID:
+                calculateObj.PercentPress();
+                displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                displayLPCWSTR = displayWStr.c_str();
+                SetWindowText(displayPanel, displayLPCWSTR);
+                break;
+            case BUTTON_TRACE_ID:
+                currentTraceLog = calculateObj.GetTraceLog();
+                temp = L"";
+                for (it = currentTraceLog.begin(); it != currentTraceLog.end(); it++)
+                {
+                    temp += (*it) + L"\n";
+                }
+                traceLPCWSTR = temp.c_str();
+                tracePanel = CreateWindowW(
                     L"STATIC",  // Predefined class; Unicode assumed 
-                    displayLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
+                    traceLPCWSTR,      // Button text 
+                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_LEFT,  // Styles 
                     10,         // x position 
-                    80,         // y position 
+                    40,         // y position 
                     320,        // Button width
-                    50,        // Button height
+                    330,        // Button height
                     hWnd,     // Parent window
                     (HMENU)DISPLAY_PANEL,       // Button menu.
                     (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
                     NULL);      // Pointer not needed.
+                
+                ShowWindow(hwndButton0, 0);
+                ShowWindow(hwndButton1, 0);
+                ShowWindow(hwndButton2, 0);
+                ShowWindow(hwndButton3, 0);
+                ShowWindow(hwndButton4, 0);
+                ShowWindow(hwndButton5, 0);
+                ShowWindow(hwndButton6, 0);
+                ShowWindow(hwndButton7, 0);
+                ShowWindow(hwndButton8, 0);
+                ShowWindow(hwndButton9, 0);
+                ShowWindow(hwndButtonDecimal, 0);
+                ShowWindow(hwndButtonEquals, 0);
+                ShowWindow(hwndButtonPercent, 0);
+                ShowWindow(hwndButtonMult, 0);
+                ShowWindow(hwndButtonDiv, 0);
+                ShowWindow(hwndButtonAdd, 0);
+                ShowWindow(hwndButtonSub, 0);
+                ShowWindow(hwndButtonC, 0);
+                ShowWindow(hwndButtonCE, 0);
+                ShowWindow(displayPanel, 0);
+                ShowWindow(hwndTraceOn, 0);
+                ShowWindow(hwndTraceOff, 0);
+                break;
+            case BUTTON_CALCULATOR_ID:
+                DestroyWindow(tracePanel);
+                ShowWindow(hwndButton0, 1);
+                ShowWindow(hwndButton1, 1);
+                ShowWindow(hwndButton2, 1);
+                ShowWindow(hwndButton3, 1);
+                ShowWindow(hwndButton4, 1);
+                ShowWindow(hwndButton5, 1);
+                ShowWindow(hwndButton6, 1);
+                ShowWindow(hwndButton7, 1);
+                ShowWindow(hwndButton8, 1);
+                ShowWindow(hwndButton9, 1);
+                ShowWindow(hwndButtonDecimal, 1);
+                ShowWindow(hwndButtonEquals, 1);
+                ShowWindow(hwndButtonPercent, 1);
+                ShowWindow(hwndButtonMult, 1);
+                ShowWindow(hwndButtonDiv, 1);
+                ShowWindow(hwndButtonAdd, 1);
+                ShowWindow(hwndButtonSub, 1);
+                ShowWindow(hwndButtonC, 1);
+                ShowWindow(hwndButtonCE, 1);
+                ShowWindow(displayPanel, 1);
+                ShowWindow(hwndTraceOn, 1);
+                ShowWindow(hwndTraceOff, 1);
+                break;
+            case BUTTON_TRACE_ON_ID:
+                calculateObj.ChangeTraceMode(true);
+                EnableWindow(hwndTraceOff, 1);
+                EnableWindow(hwndTraceOn, 0);
+                break;
+            case BUTTON_TRACE_OFF_ID:
+                calculateObj.ChangeTraceMode(false);
+                EnableWindow(hwndTraceOn, 1);
+                EnableWindow(hwndTraceOff, 0);
                 break;
             default:
                 return DefWindowProc(hWnd, message, wParam, lParam);
@@ -681,13 +700,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             TCHAR greeting[] = _T("Calculator");
 
             // TODO: Add any drawing code that uses hdc here...
-            TextOut(hdc, 5, 5, greeting, _tcslen(greeting));
-
-            auto test = std::to_wstring(123);
-            int test2a = 1234;
-            LPCWSTR test2b = test.c_str();
-            TextOut(hdc, 200, 5, test2b, _tcslen(test2b));
-            //TextOut(hdc, 200, 5, test2b, _tcslen(test2b));
+            //TextOut(hdc, 5, 5, greeting, _tcslen(greeting));
 
             EndPaint(hWnd, &ps);
         }

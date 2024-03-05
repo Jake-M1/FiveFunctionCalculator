@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <list>
 
 class Calculate
 {
@@ -27,6 +28,16 @@ private:
 	bool decimalMode;
 	double decimalMult;
 
+	// Keep track of negative sign pressed first
+	bool negate;
+
+	std::list<std::wstring> traceLog;
+
+	// Variables for trace logs
+	bool traceMode;
+	double firstNumOld;
+	double secondNumOld;
+
 public:
 	Calculate();
 	double GetDisplay();
@@ -40,5 +51,12 @@ public:
 	void CreateSecondNumDecimal(int digit);
 	void Clear();
 	void ClearEntry();
+	void PercentPress();
+	bool GetNegate();
+	int GetState();
+	std::list<std::wstring> GetTraceLog();
+	void AddTraceLogEntry(std::wstring entry);
+	std::wstring CreateTraceLogEntry(std::wstring input, bool decimal);
+	void ChangeTraceMode(bool newTraceMode);
 };
 
