@@ -31,12 +31,17 @@ private:
 	// Keep track of negative sign pressed first
 	bool negate;
 
+	// For divide by 0
+	bool error;
+
 	std::list<std::wstring> traceLog;
 
 	// Variables for trace logs
 	bool traceMode;
 	double firstNumOld;
 	double secondNumOld;
+	std::wstring currentTraceDecisions;
+	int currentTraceDecisionCount;
 
 public:
 	Calculate();
@@ -47,16 +52,21 @@ public:
 	void OperatorPress(int operatorCode);
 	void EqualsPress();
 	void DecimalPress();
+	bool GetDecimalMode();
 	void CreateFirstNumDecimal(int digit);
 	void CreateSecondNumDecimal(int digit);
 	void Clear();
 	void ClearEntry();
 	void PercentPress();
 	bool GetNegate();
+	bool GetError();
 	int GetState();
 	std::list<std::wstring> GetTraceLog();
 	void AddTraceLogEntry(std::wstring entry);
 	std::wstring CreateTraceLogEntry(std::wstring input, bool decimal);
 	void ChangeTraceMode(bool newTraceMode);
+	void AddTraceDecision(std::wstring decision);
+	void AddTraceDecisionCount(int num);
+	void ResetTraceDecision();
 };
 

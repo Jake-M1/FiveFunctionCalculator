@@ -5,6 +5,7 @@
 #include "FiveFunctionCalculator.h"
 #include <string>
 #include "Calculate.h"
+#include <cmath>
 
 #define MAX_LOADSTRING 100
 #define BUTTON0_ID 1000
@@ -47,6 +48,8 @@ HWND tracePanel; // Trace panel
 Calculate calculateObj; // Object for the logic of the calulator
 std::wstring displayWStr;
 LPCWSTR displayLPCWSTR; // Display text
+double displayInt;
+double displayDecimal;
 LPCWSTR traceLPCWSTR; // Trace text
 std::list<std::wstring> currentTraceLog;
 std::list<std::wstring>::iterator it;
@@ -57,6 +60,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+void UpdateDisplay(std::wstring extra);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -65,8 +69,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
-    // TODO: Place code here.
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -301,16 +303,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         displayLPCWSTR = displayWStr.c_str();
         displayPanel = CreateWindowW(
             L"STATIC",  // Predefined class; Unicode assumed 
-            displayLPCWSTR,      // Button text 
+            displayLPCWSTR,      // Panel text 
             WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_RIGHT,  // Styles 
             10,         // x position 
             80,         // y position 
-            320,        // width
-            50,        // height
+            320,        // Panel width
+            50,        // Panel height
             hWnd,     // Parent window
-            (HMENU)DISPLAY_PANEL,       // Button menu.
+            (HMENU)DISPLAY_PANEL,       // Panel menu.
             (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
             NULL);      // Pointer not needed.
+
+        UpdateDisplay(L"");
 
         hwndButtonDecimal = CreateWindowW(
             L"BUTTON",  // Predefined class; Unicode assumed 
@@ -486,209 +490,255 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_COMMAND:
         {
+            calculateObj.ResetTraceDecision();
+
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
-            switch (wmId)
+            if (wmId > 999 && wmId < 1010)
             {
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-                break;
-            case IDM_EXIT:
-                DestroyWindow(hWnd);
-                break;
-            case BUTTON1_ID:
-                calculateObj.NumberPress(1);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON2_ID:
-                calculateObj.NumberPress(2);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON3_ID:
-                calculateObj.NumberPress(3);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON4_ID:
-                calculateObj.NumberPress(4);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON5_ID:
-                calculateObj.NumberPress(5);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON6_ID:
-                calculateObj.NumberPress(6);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON7_ID:
-                calculateObj.NumberPress(7);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON8_ID:
-                calculateObj.NumberPress(8);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON9_ID:
-                calculateObj.NumberPress(9);
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON0_ID:
-                calculateObj.NumberPress(0);
-                if (calculateObj.GetNegate())
+                calculateObj.AddTraceDecision(L"if menuID num button -> ");
+                calculateObj.AddTraceDecisionCount(1);
+
+                // Parse the menu selections for number buttons
+                switch (wmId)
                 {
-                    displayWStr = L"-" + std::to_wstring(calculateObj.GetDisplay());
+                case BUTTON1_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON1_ID (1st case) -> ");
+                    calculateObj.AddTraceDecisionCount(1);
+
+                    calculateObj.NumberPress(1);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON2_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON2_ID (2nd case) -> ");
+                    calculateObj.AddTraceDecisionCount(2);
+
+                    calculateObj.NumberPress(2);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON3_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON3_ID (3rd case) -> ");
+                    calculateObj.AddTraceDecisionCount(3);
+
+                    calculateObj.NumberPress(3);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON4_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON4_ID (4th case) -> ");
+                    calculateObj.AddTraceDecisionCount(4);
+
+                    calculateObj.NumberPress(4);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON5_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON5_ID (5th case) -> ");
+                    calculateObj.AddTraceDecisionCount(5);
+
+                    calculateObj.NumberPress(5);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON6_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON6_ID (6th case) -> ");
+                    calculateObj.AddTraceDecisionCount(6);
+
+                    calculateObj.NumberPress(6);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON7_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON7_ID (7th case) -> ");
+                    calculateObj.AddTraceDecisionCount(7);
+
+                    calculateObj.NumberPress(7);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON8_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON8_ID (8th case) -> ");
+                    calculateObj.AddTraceDecisionCount(8);
+
+                    calculateObj.NumberPress(8);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON9_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON9_ID (9th case) -> ");
+                    calculateObj.AddTraceDecisionCount(9);
+
+                    calculateObj.NumberPress(9);
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON0_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON0_ID (10th case) -> ");
+                    calculateObj.AddTraceDecisionCount(10);
+
+                    calculateObj.NumberPress(0);
+                    if (calculateObj.GetNegate())
+                    {
+                        UpdateDisplay(L"-");
+                    }
+                    else
+                    {
+                        UpdateDisplay(L"");
+                    }
+                    break;
                 }
-                else
+            }
+            else
+            {
+                calculateObj.AddTraceDecision(L"else menuID num button -> ");
+                calculateObj.AddTraceDecisionCount(1);
+
+                // Parse the menu selections for other buttons
+                switch (wmId)
                 {
-                    displayWStr = std::to_wstring(calculateObj.GetDisplay());
+                case BUTTON_ADD_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_ADD_ID (1st case) -> ");
+                    calculateObj.AddTraceDecisionCount(1);
+
+                    calculateObj.OperatorPress(1);
+                    break;
+                case BUTTON_SUB_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_SUB_ID (2nd case) -> ");
+                    calculateObj.AddTraceDecisionCount(2);
+
+                    calculateObj.OperatorPress(2);
+                    if (calculateObj.GetNegate() && calculateObj.GetState() == 0)
+                    {
+                        UpdateDisplay(L"-");
+                    }
+                    break;
+                case BUTTON_MULT_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_MULT_ID (3rd case) -> ");
+                    calculateObj.AddTraceDecisionCount(3);
+
+                    calculateObj.OperatorPress(3);
+                    break;
+                case BUTTON_DIV_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_DIV_ID (4th case) -> ");
+                    calculateObj.AddTraceDecisionCount(4);
+
+                    calculateObj.OperatorPress(4);
+                    break;
+                case BUTTON_EQUALS_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_EQUALS_ID (5th case) -> ");
+                    calculateObj.AddTraceDecisionCount(5);
+
+                    calculateObj.EqualsPress();
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON_DECIMAL_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_DECIMAL_ID (6th case) -> ");
+                    calculateObj.AddTraceDecisionCount(6);
+
+                    calculateObj.DecimalPress();
+                    break;
+                case BUTTON_C_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_C_ID (7th case) -> ");
+                    calculateObj.AddTraceDecisionCount(7);
+
+                    calculateObj.Clear();
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON_CE_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_CE_ID (8th case) -> ");
+                    calculateObj.AddTraceDecisionCount(8);
+
+                    calculateObj.ClearEntry();
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON_PERCENT_ID:
+                    calculateObj.AddTraceDecision(L"Switch case BUTTON_PERCENT_ID (9th case) -> ");
+                    calculateObj.AddTraceDecisionCount(9);
+
+                    calculateObj.PercentPress();
+                    UpdateDisplay(L"");
+                    break;
+                case BUTTON_TRACE_ID:
+                    currentTraceLog = calculateObj.GetTraceLog();
+                    temp = L"";
+                    for (it = currentTraceLog.begin(); it != currentTraceLog.end(); it++)
+                    {
+                        temp += (*it) + L"\n";
+                    }
+                    traceLPCWSTR = temp.c_str();
+                    tracePanel = CreateWindowW(
+                        L"STATIC",  // Predefined class; Unicode assumed 
+                        traceLPCWSTR,      // Panel text 
+                        WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_LEFT,  // Styles 
+                        10,         // x position 
+                        40,         // y position 
+                        320,        // Panel width
+                        330,        // Panel height
+                        hWnd,     // Parent window
+                        (HMENU)DISPLAY_PANEL,       // Panel menu.
+                        (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
+                        NULL);      // Pointer not needed.
+
+                    ShowWindow(hwndButton0, 0);
+                    ShowWindow(hwndButton1, 0);
+                    ShowWindow(hwndButton2, 0);
+                    ShowWindow(hwndButton3, 0);
+                    ShowWindow(hwndButton4, 0);
+                    ShowWindow(hwndButton5, 0);
+                    ShowWindow(hwndButton6, 0);
+                    ShowWindow(hwndButton7, 0);
+                    ShowWindow(hwndButton8, 0);
+                    ShowWindow(hwndButton9, 0);
+                    ShowWindow(hwndButtonDecimal, 0);
+                    ShowWindow(hwndButtonEquals, 0);
+                    ShowWindow(hwndButtonPercent, 0);
+                    ShowWindow(hwndButtonMult, 0);
+                    ShowWindow(hwndButtonDiv, 0);
+                    ShowWindow(hwndButtonAdd, 0);
+                    ShowWindow(hwndButtonSub, 0);
+                    ShowWindow(hwndButtonC, 0);
+                    ShowWindow(hwndButtonCE, 0);
+                    ShowWindow(displayPanel, 0);
+                    ShowWindow(hwndTraceOn, 0);
+                    ShowWindow(hwndTraceOff, 0);
+                    break;
+                case BUTTON_CALCULATOR_ID:
+                    DestroyWindow(tracePanel);
+                    ShowWindow(hwndButton0, 1);
+                    ShowWindow(hwndButton1, 1);
+                    ShowWindow(hwndButton2, 1);
+                    ShowWindow(hwndButton3, 1);
+                    ShowWindow(hwndButton4, 1);
+                    ShowWindow(hwndButton5, 1);
+                    ShowWindow(hwndButton6, 1);
+                    ShowWindow(hwndButton7, 1);
+                    ShowWindow(hwndButton8, 1);
+                    ShowWindow(hwndButton9, 1);
+                    ShowWindow(hwndButtonDecimal, 1);
+                    ShowWindow(hwndButtonEquals, 1);
+                    ShowWindow(hwndButtonPercent, 1);
+                    ShowWindow(hwndButtonMult, 1);
+                    ShowWindow(hwndButtonDiv, 1);
+                    ShowWindow(hwndButtonAdd, 1);
+                    ShowWindow(hwndButtonSub, 1);
+                    ShowWindow(hwndButtonC, 1);
+                    ShowWindow(hwndButtonCE, 1);
+                    ShowWindow(displayPanel, 1);
+                    ShowWindow(hwndTraceOn, 1);
+                    ShowWindow(hwndTraceOff, 1);
+                    break;
+                case BUTTON_TRACE_ON_ID:
+                    calculateObj.ChangeTraceMode(true);
+                    EnableWindow(hwndTraceOff, 1);
+                    EnableWindow(hwndTraceOn, 0);
+                    break;
+                case BUTTON_TRACE_OFF_ID:
+                    calculateObj.ChangeTraceMode(false);
+                    EnableWindow(hwndTraceOn, 1);
+                    EnableWindow(hwndTraceOff, 0);
+                    break;
+                case IDM_ABOUT:
+                    DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+                    break;
+                case IDM_EXIT:
+                    DestroyWindow(hWnd);
+                    break;
+                default:
+                    return DefWindowProc(hWnd, message, wParam, lParam);
                 }
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON_ADD_ID:
-                calculateObj.OperatorPress(1);
-                break;
-            case BUTTON_SUB_ID:
-                calculateObj.OperatorPress(2);
-                if (calculateObj.GetNegate() && calculateObj.GetState() == 0)
-                {
-                    displayWStr = L"-" + std::to_wstring(calculateObj.GetDisplay());
-                    displayLPCWSTR = displayWStr.c_str();
-                    SetWindowText(displayPanel, displayLPCWSTR);
-                }
-                break;
-            case BUTTON_MULT_ID:
-                calculateObj.OperatorPress(3);
-                break;
-            case BUTTON_DIV_ID:
-                calculateObj.OperatorPress(4);
-                break;
-            case BUTTON_EQUALS_ID:
-                calculateObj.EqualsPress();
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON_DECIMAL_ID:
-                calculateObj.DecimalPress();
-                break;
-            case BUTTON_C_ID:
-                calculateObj.Clear();
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON_CE_ID:
-                calculateObj.ClearEntry();
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON_PERCENT_ID:
-                calculateObj.PercentPress();
-                displayWStr = std::to_wstring(calculateObj.GetDisplay());
-                displayLPCWSTR = displayWStr.c_str();
-                SetWindowText(displayPanel, displayLPCWSTR);
-                break;
-            case BUTTON_TRACE_ID:
-                currentTraceLog = calculateObj.GetTraceLog();
-                temp = L"";
-                for (it = currentTraceLog.begin(); it != currentTraceLog.end(); it++)
-                {
-                    temp += (*it) + L"\n";
-                }
-                traceLPCWSTR = temp.c_str();
-                tracePanel = CreateWindowW(
-                    L"STATIC",  // Predefined class; Unicode assumed 
-                    traceLPCWSTR,      // Button text 
-                    WS_TABSTOP | WS_VISIBLE | WS_CHILD | WS_BORDER | SS_LEFT,  // Styles 
-                    10,         // x position 
-                    40,         // y position 
-                    320,        // Button width
-                    330,        // Button height
-                    hWnd,     // Parent window
-                    (HMENU)DISPLAY_PANEL,       // Button menu.
-                    (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE),
-                    NULL);      // Pointer not needed.
-                
-                ShowWindow(hwndButton0, 0);
-                ShowWindow(hwndButton1, 0);
-                ShowWindow(hwndButton2, 0);
-                ShowWindow(hwndButton3, 0);
-                ShowWindow(hwndButton4, 0);
-                ShowWindow(hwndButton5, 0);
-                ShowWindow(hwndButton6, 0);
-                ShowWindow(hwndButton7, 0);
-                ShowWindow(hwndButton8, 0);
-                ShowWindow(hwndButton9, 0);
-                ShowWindow(hwndButtonDecimal, 0);
-                ShowWindow(hwndButtonEquals, 0);
-                ShowWindow(hwndButtonPercent, 0);
-                ShowWindow(hwndButtonMult, 0);
-                ShowWindow(hwndButtonDiv, 0);
-                ShowWindow(hwndButtonAdd, 0);
-                ShowWindow(hwndButtonSub, 0);
-                ShowWindow(hwndButtonC, 0);
-                ShowWindow(hwndButtonCE, 0);
-                ShowWindow(displayPanel, 0);
-                ShowWindow(hwndTraceOn, 0);
-                ShowWindow(hwndTraceOff, 0);
-                break;
-            case BUTTON_CALCULATOR_ID:
-                DestroyWindow(tracePanel);
-                ShowWindow(hwndButton0, 1);
-                ShowWindow(hwndButton1, 1);
-                ShowWindow(hwndButton2, 1);
-                ShowWindow(hwndButton3, 1);
-                ShowWindow(hwndButton4, 1);
-                ShowWindow(hwndButton5, 1);
-                ShowWindow(hwndButton6, 1);
-                ShowWindow(hwndButton7, 1);
-                ShowWindow(hwndButton8, 1);
-                ShowWindow(hwndButton9, 1);
-                ShowWindow(hwndButtonDecimal, 1);
-                ShowWindow(hwndButtonEquals, 1);
-                ShowWindow(hwndButtonPercent, 1);
-                ShowWindow(hwndButtonMult, 1);
-                ShowWindow(hwndButtonDiv, 1);
-                ShowWindow(hwndButtonAdd, 1);
-                ShowWindow(hwndButtonSub, 1);
-                ShowWindow(hwndButtonC, 1);
-                ShowWindow(hwndButtonCE, 1);
-                ShowWindow(displayPanel, 1);
-                ShowWindow(hwndTraceOn, 1);
-                ShowWindow(hwndTraceOff, 1);
-                break;
-            case BUTTON_TRACE_ON_ID:
-                calculateObj.ChangeTraceMode(true);
-                EnableWindow(hwndTraceOff, 1);
-                EnableWindow(hwndTraceOn, 0);
-                break;
-            case BUTTON_TRACE_OFF_ID:
-                calculateObj.ChangeTraceMode(false);
-                EnableWindow(hwndTraceOn, 1);
-                EnableWindow(hwndTraceOff, 0);
-                break;
-            default:
-                return DefWindowProc(hWnd, message, wParam, lParam);
             }
         }
         break;
@@ -696,12 +746,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
-
-            TCHAR greeting[] = _T("Calculator");
-
-            // TODO: Add any drawing code that uses hdc here...
-            //TextOut(hdc, 5, 5, greeting, _tcslen(greeting));
-
             EndPaint(hWnd, &ps);
         }
         break;
@@ -732,4 +776,29 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+
+void UpdateDisplay(std::wstring front)
+{
+    // Check for error first
+    if (calculateObj.GetError())
+    {
+        SetWindowText(displayPanel, L"Error");
+        return;
+    }
+
+    // Display a whole number or decimal
+    displayDecimal = std::modf(calculateObj.GetDisplay(), &displayInt);
+    if (!calculateObj.GetDecimalMode() && displayDecimal == 0)
+    {
+        displayWStr = front + std::to_wstring((int)displayInt);
+    }
+    else
+    {
+        displayWStr = front + std::to_wstring(calculateObj.GetDisplay());
+    }
+
+    displayLPCWSTR = displayWStr.c_str();
+    SetWindowText(displayPanel, displayLPCWSTR);
 }
